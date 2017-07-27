@@ -1,0 +1,55 @@
+.header
+  %h1
+    %span.title
+  %p
+    %span.relation
+
+.current-date
+
+%div(class=@chartClassName)
+
+.footer
+
+  .footer-left
+
+    %a.nav-play(href='')= @t 'player', 'play'
+
+    %a.nav-left(href='')
+      &#x02039;
+      .tooltip
+        .destination= @t 'player', 'previous_keyframe'
+        .keyframe-title
+          %span.main-title Placeholder
+          %span.sub-title Placeholder
+
+    %a.nav-right(href='')
+      &#x0203A;
+      .tooltip
+        .destination= @t 'player', 'next_keyframe'
+        .keyframe-title
+          %span.main-title Placeholder
+          %span.sub-title Placeholder
+
+    .keyframe-number
+      %span.current-index
+      \/
+      %span.num-keyframes
+
+    .dots
+      .tooltip
+        .keyframe-title
+          %span.main-title Placeholder
+          %span.sub-title Placeholder
+
+    .title
+
+  .footer-right
+
+    %a.toggle-fullscreen(href='')
+      .fallback= @t 'player', 'fullscreen'
+      .tooltip= @t 'player', 'fullscreen'
+
+    %a.toggle-legend(href='')
+      .fallback= @t 'legend', 'legend'
+      .tooltip= @t 'legend', 'legend'
+

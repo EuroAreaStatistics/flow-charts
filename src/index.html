@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Flow visualization library example</title>
+<link rel="stylesheet" href="stylesheets/flow_viz.css">
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+
+#player-container {
+  position: relative;
+  margin: 10px;
+  border: 1px solid #eee;
+  max-width: 800px;
+  height: 600px;
+}
+</style>
+</head>
+<body>
+
+<div id="player-container"></div>
+
+<p>
+  <button id="loadNewKeyframes">Load new keyframe data</button>
+  <button id="loadNewData">Load new data</button>
+  <button id="dispose">Dispose</button>
+</p>
+
+<script src="javascripts/flow_viz.js"></script>
+<script src="example_configuration/colors.js"></script>
+<script src="example_configuration/keyframes.js"></script>
+<script src="example_configuration/locale.js"></script>
+<script src="example_configuration/type_data.js"></script>
+<script>
+(function() {
+  'use strict';
+
+  var presentationData = {
+    keyframes: exampleKeyframes,
+    colors: exampleColors,
+    locale: exampleLocale,
+    typeData: exampleTypeData
+  };
+
+  var newKeyframes = [
+    {
+      "title": "New keyframe",
+      "date": "2016",
+      "dataType": {
+        "type": "import",
+        "unit": "bln_current_dollars"
+      },
+      "elements": [
+        {
+          "id": "usa",
+          "sumIn": 300,
+          "sumOut": 100,
+          "outgoing": {
+            "deu": 50,
+            "fra": 20
+          },
+          "incoming": {}
+        },
+        {
+          "id": "deu",
+          "sumIn": 200,
+          "sumOut": 100,
+          "outgoing": {
+            "usa": 50,
+            "fra": 20
+          },
+          "incoming": {}
+        },
+        {
+          "id": "fra",
+          "sumIn": 150,
+          "sumOut": 100,
+          "outgoing": {
+            "deu": 50,
+            "usa": 20
+          }
+        }
+      ],
+      maxSum: 400
+    }
+  ];
+
+  var player;
+
+  var render = function () {
+    player = FlowViz.renderPlayer('#player-container', presentationData);
+  };
+
+  render();
+
+  document.getElementById('loadNewKeyframes').addEventListener('click',
+    function() {
+      player.model.loadKeyframes(newKeyframes);
+    }
+  );
+  document.getElementById('loadNewData').addEventListener('click',
+    function() {
+      var newPresentationData = {
+        keyframes: newKeyframes,
+        colors: exampleColors,
+        locale: exampleLocale,
+        typeData: exampleTypeData
+      };
+      player.view.dispose();
+      player = FlowViz.renderPlayer('#player-container', newPresentationData);
+    }
+  );
+  document.getElementById('dispose').addEventListener('click', function() {
+    player.view.dispose();
+  });
+})();
+</script>
+
+</body>
+</html>

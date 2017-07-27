@@ -1,0 +1,84 @@
+%a.legend__close(href='')
+  ×
+  = @t 'legend', 'close'
+%a.legend__toggle.closed(href='')= @t 'legend', 'toggle_open'
+
+- [type, unit] = @dataType
+
+- describeIndicators = (indicators) ->
+  %ul.legend__indicators
+    - for indicator in indicators
+      %p
+        %strong>= indicator.type
+        :
+        = "#{indicator.typeFull}, #{indicator.unitFull}"
+      %p
+        = @t 'legend', 'maximum_size'
+        != indicator.maxValue
+
+%section.legend__short.legend__section.legend__sources
+  %h3.legend__heading= @t 'legend', 'sources'
+
+  .legend__sectionBody
+    %ul
+      -# Data source
+      %li
+        = @typeName + ':'
+        %a.legend__source{ href: @dataSource.url, target: '_blank' }
+          = @dataSource.name
+
+      -# Indicator sources
+      - for indicator in @indicators
+        %li
+          = indicator.type + ':'
+          %a.legend__source{ href: indicator.sourceURL, target: '_blank' }
+            = indicator.sourceName
+
+%section.legend__long.legend__section.legend__explanations
+  %h3.legend__heading= @t 'legend', 'legend'
+
+  .legend__sectionBody
+    %table
+
+      -# Magnet
+      %tr.legend__magnets
+        %td.legend__icon
+          .legend__magnet.legend__magnetOutgoing(style="background-color: #{@magnetOutgoingColor}")
+          .legend__magnet.legend__magnetIncoming(style="background-color: #{@magnetIncomingColor}")
+        %td!= @magnetDescription
+
+      -# Relations
+      %tr.legend__relations
+        %td.legend__icon
+          %span.legend__relationArrow
+        %td!= @relationDescription
+
+      -# Indicator visualization
+      - if @groupedIndicators.absolute
+        %tr.legend__absoluteIndicators
+          %td.legend__icon
+            %img(src='images/legend-indicator-absolute.png' width='20' height='20' alt='')
+          %td
+            %p= @t 'legend', 'indicatorIcon', 'absolute'
+            = describeIndicators.call this, @groupedIndicators.absolute
+
+      - if @groupedIndicators.proportional
+        %tr.legend__proportionalIndicators
+          %td.legend__icon
+            %img(src='images/legend-indicator-percent.png' width='20' height='20' alt='')
+          %td
+            %p= @t 'legend', 'indicatorIcon', 'proportional'
+            = describeIndicators.call this, @groupedIndicators.proportional
+
+      -# Indicator tendency arrows
+      - if @indicatorTypes.length > 0
+        %tr
+          %td.legend__icon
+            %img(src='images/legend-indicator-tendency.png' width='10' height='10' alt='')
+          %td!= @t 'legend', 'tendency'
+
+%section.legend__long.legend__section
+  %h3.legend__heading= @t 'legend', 'about_heading'
+
+  .legend__sectionBody
+    != @t 'legend', 'about_body'

@@ -1,29 +1,35 @@
-# README #
+# Flow visualization library
 
-This README would normally document whatever steps are necessary to get your application up and running.
+JavaScript library for creating flow visualizations based on the open-source tool [GED VIZ](https://github.com/bertelsmannstift/GED-VIZ) by the Bertelsmann Foundation.
 
-### What is this repository for? ###
+## Setup
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+This project uses a Gulp-based build process and development server.
 
-### How do I get set up? ###
+To start the development server, run these commands:
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+```
+npm install
+npm start
+```
 
-### Contribution guidelines ###
+Go to [http://localhost:8080](http://localhost:8080) to see the demo.
 
-* Writing tests
-* Code review
-* Other guidelines
+To make a production build run:
 
-### Who do I talk to? ###
+```
+npm run build
+```
 
-* Repo owner or admin
-* Other community or team contact
+## About this library
+
+This library is based on the project [GED VIZ](https://github.com/bertelsmannstift/GED-VIZ) by the Bertelsmann Foundation. While GED VIZ is an integrated application for telling data-driven stories, this library isolates the visualization part of GED VIZ to make it reusable.
+
+Software Development: [9elements](http://9elements.com)
+
+Technical contact: Mathias Schäfer,
+[mathias.schaefer@9elements.com](mailto:mathias.schaefer@9elements.com)
+
+## License
+
+[Please see LICENSE.txt](LICENSE.txt).

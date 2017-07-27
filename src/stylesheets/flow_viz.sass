@@ -1,0 +1,23 @@
+// Base modules
+@import reset
+@import functions
+@import variables
+@import mixins
+
+// Chart
+@import chart
+@import presentation
+@import indicator
+@import relation
+
+// Player
+@import player
+@import contextbox
+@import legend
+
+// Apply abstract scopes to the specific classes
+.flow-viz-chart
+  @extend %flow-viz-chart
+
+.flow-viz-player
+  @extend %flow-viz-player

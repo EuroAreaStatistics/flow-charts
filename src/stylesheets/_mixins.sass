@@ -1,0 +1,75 @@
+// Vertical gradient without fallback
+// Conforms to the latest CSS3 Backgrounds specification.
+@mixin additional-bg-gradient($stops...)
+  background-image: -moz-linear-gradient(top, $stops)
+  background-image: -webkit-linear-gradient(top, $stops)
+  background-image: linear-gradient(to bottom, $stops)
+
+// Vertical gradient with background-color fallback
+// Uses the last stop as fallback (usally the darkest color
+// if the light source is on the top).
+@mixin bg-gradient($stops...)
+  $last_stop: nth($stops, length($stops))
+  background-color: $last_stop
+  +additional-bg-gradient($stops...)
+
+@mixin svg-bg-with-fallback($name)
+  background-image: image-url('#{$name}.png')
+  // Use multiple background images as feature detection
+  background-image: none, image-url('#{$name}.svg')
+
+// http://caniuse.com/background-size
+@mixin background-size($value)
+  -webkit-background-size: $value
+  background-size: $value
+
+// http://caniuse.com/user-select-none
+@mixin user-select-none
+  -moz-user-select: none
+  -webkit-user-select: none
+  -ms-user-select: none
+  user-select: none
+
+@mixin hide-text
+  text-indent: -100000px
+  overflow: hidden
+  text-align: left
+
+// Layout abstract classes
+
+// Clearfix that contains the top and bottom margins of children
+// http://nicolasgallagher.com/micro-clearfix-hack/
+@mixin clearfix
+  &:before,
+  &:after
+    content: ''
+    display: table
+  &:after
+    clear: both
+  &
+    zoom: 1
+
+%clearfix
+  +clearfix
+
+@mixin off-left
+  position: absolute
+  left: -10000px
+  top: 0
+  width: 0
+  height: 0
+  overflow: hidden
+
+%off-left
+  +off-left
+
+// Change the standard box model so width includes border and padding
+%border-box
+  -webkit-box-sizing: border-box
+  -moz-box-sizing: border-box
+  box-sizing: border-box
+
+// Content abstract classes
+
+%dark-background-gradient
+  +bg-gradient($light-background-gradient-color, $dark-background-gradient-color)

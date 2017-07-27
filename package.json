@@ -1,0 +1,32 @@
+{
+  "name": "flow_viz",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Flow visualization library",
+  "scripts": {
+    "start": "gulp",
+    "build": "gulp build"
+  },
+  "author": "Mathias Schäfer <mathias.schaefer@9elements.com>",
+  "devDependencies": {
+    "backbone": "^1.1.0",
+    "browser-sync": "^2.13.0",
+    "coffee-loader": "^0.7.2",
+    "decimal-adjust": "0.0.0",
+    "event-stream": "^3.3.2",
+    "gulp": "^3.9.0",
+    "gulp-sass": "^2.1.0",
+    "gulp-util": "^3.0.7",
+    "hamlc-loader": "0.0.11",
+    "jquery": "^1.11.3",
+    "lodash": "^3.10.1",
+    "raphael": "^2.1.0",
+    "rimraf": "^2.4.3",
+    "run-sequence": "^1.2.1",
+    "webpack": "^1.13.1",
+    "webpack-dev-server": "^1.12.1"
+  },
+  "dependencies": {
+    "gulp-haml-coffee": "0.0.6"
+  }
+}
