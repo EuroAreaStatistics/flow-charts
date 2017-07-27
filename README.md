@@ -27,6 +27,9 @@ This library is based on the project [GED VIZ](https://github.com/bertelsmannsti
 
 Software Development: [9elements](http://9elements.com)
 
+Contact: Matthias Rumpf,
+[matthias.rumpf@oecd.org](mailto:matthias.rumpf@oecd.org)
+
 Technical contact: Mathias Schäfer,
 [mathias.schaefer@9elements.com](mailto:mathias.schaefer@9elements.com)
 
