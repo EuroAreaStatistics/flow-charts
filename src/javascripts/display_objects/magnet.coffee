@@ -888,7 +888,11 @@ class Magnet extends DisplayObject
   # -------------------
 
   showContextBox: ->
-    mediator.publish 'contextbox:explainMagnet', @element.model
+    pos = @element.indicators.countryLabel.getBBox()
+    mediator.publish 'contextbox:explainMagnet',
+      elementModel: @element.model
+      x: pos.x
+      y: pos.y2
     return
 
   hideContextBox: ->

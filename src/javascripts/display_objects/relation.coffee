@@ -2,7 +2,6 @@
 $ = require 'jquery'
 _ = require 'lodash'
 Raphael = require 'raphael'
-mediator = require 'mediator'
 DisplayObject = require 'display_objects/display_object'
 formatNumber = require 'lib/format_number'
 utils = require 'lib/utils'
@@ -458,18 +457,6 @@ class Relation extends DisplayObject
     @destinationArrow.hide() if @destinationArrow
     return
 
-  # Content box methods
-  # -------------------
-
-  showContextBox: ->
-    mediator.publish 'contextbox:explainRelation',
-      {@from, @to, @value, @missingRelations}
-    return
-
-  hideContextBox: ->
-    mediator.publish 'contextbox:hide'
-    return
-
   # Mouse event handling
   # --------------------
 
@@ -480,9 +467,6 @@ class Relation extends DisplayObject
       .click(@clicked)
 
   mouseenterHandler: =>
-    # Fade in content box
-    @showContextBox()
-
     # Highlight if normal
     if @state('path') is 'normal'
       @transitionTo 'path', 'highlight'
@@ -498,9 +482,6 @@ class Relation extends DisplayObject
     if _.some(@displayObjects, (obj) -> relatedTarget is obj.node) or
       @labelContainer and $.contains(@labelContainer.get(0), relatedTarget)
         return
-
-    # Fade out content box
-    @hideContextBox()
 
     pathState = @state 'path'
 
@@ -702,15 +683,63 @@ class Relation extends DisplayObject
     value.css left: x, top: y
     return
 
-  createDescriptionLabel: (middleOfPath) ->
-    {from, to} = this
+  explainRelation: () ->
+    {from, to, value} = this
+    {type, unit} = from.model.dataType
 
-    type = from.model.dataType.type
+    percentFrom = formatNumber(
+      @configuration,
+      (100 / from.model.sumOut * value).toFixed(1),
+      null, null, true
+    ) + '%'
+    percentTo = formatNumber(
+      @configuration,
+      (100 / to.model.sumIn * value).toFixed(1),
+      null, null, true
+    ) + '%'
 
-    text = @template ['flow', type, 'fromTo'], {
+    formattedValue = formatNumber(
+      @configuration, value, null, null, true
+    )
+
+    templateData =
       from: @t('entityNames', from.id)
       to: @t('entityNames', to.id)
-    }
+      dataType: @t('dataType', type)
+      percentFrom: percentFrom
+      percentTo: percentTo
+      value: formattedValue
+      unit: @t('units', unit, 'full')
+      date: from.model.date
+
+    text = '<p>'
+    text += @template ['contextbox', 'relation', type], templateData
+    if value >= 0
+      text += @template ['contextbox', 'relationPercentage', type], templateData
+    text += '</p>'
+
+    # Missing relations
+    if @missingRelations
+      text += '<p>'
+      text += @t 'contextbox', 'relation', 'missing', 'intro'
+      text += '</p>'
+      text += '<ul>'
+      for fromCountry, toCountries of @missingRelations
+        templateData =
+          source: @entityName(fromCountry)
+          targets: @joinList(_.map(toCountries, @entityName))
+        text += '<li>'
+        text += @template(
+          ['contextbox', 'relation', 'missing', 'entry']
+          templateData
+        )
+        text += '</li>'
+      text += '</ul>'
+
+    return text
+
+  createDescriptionLabel: (middleOfPath) ->
+    text = @explainRelation()
 
     description = $('<div>')
       .addClass('relation-description-label')

@@ -16,72 +16,14 @@ class ContextboxView extends View
 
   initialize: ->
     super
-    @subscribeEvent 'contextbox:explainRelation', @explainRelation
     @subscribeEvent 'contextbox:explainMagnet', @explainMagnet
     @subscribeEvent 'contextbox:hide', @handleHideEvent
 
   getTemplateFunction: ->
     null
 
-  explainRelation: (options) ->
-    {from, to, value} = options
-    {type, unit} = from.model.dataType
-
-    configuration = @model.get 'configuration'
-
-    percentFrom = formatNumber(
-      configuration,
-      (100 / from.model.sumOut * value).toFixed(1),
-      null, null, true
-    ) + '%'
-    percentTo = formatNumber(
-      configuration,
-      (100 / to.model.sumIn * value).toFixed(1),
-      null, null, true
-    ) + '%'
-
-    formattedValue = formatNumber(
-      configuration, value, null, null, true
-    )
-
-    templateData =
-      from: @t('entityNames', from.id)
-      to: @t('entityNames', to.id)
-      dataType: @t('dataType', type)
-      percentFrom: percentFrom
-      percentTo: percentTo
-      value: formattedValue
-      unit: @t('units', unit, 'full')
-      date: from.model.date
-
-    text = '<p>'
-    text += @template ['contextbox', 'relation', type], templateData
-    if value >= 0
-      text += @template ['contextbox', 'relationPercentage', type], templateData
-    text += '</p>'
-
-    # Missing relations
-    if options.missingRelations
-      text += '<p>'
-      text += @t 'contextbox', 'relation', 'missing', 'intro'
-      text += '</p>'
-      text += '<ul>'
-      for fromCountry, toCountries of options.missingRelations
-        templateData =
-          source: @entityName(fromCountry)
-          targets: @joinList(_.map(toCountries, @entityName))
-        text += '<li>'
-        text += @template(
-          ['contextbox', 'relation', 'missing', 'entry']
-          templateData
-        )
-        text += '</li>'
-      text += '</ul>'
-
-    @showBox text
-    return
-
-  explainMagnet: (elementModel) ->
+  explainMagnet: (options) ->
+    {elementModel, x, y} = options
     {type, unit} = elementModel.dataType
 
     configuration = @model.get 'configuration'
@@ -128,11 +70,14 @@ class ContextboxView extends View
       )
       text += '</p>'
 
-    @showBox text
+    @showBox { html: text, x, y }
     return
 
-  showBox: (html) ->
+  showBox: (options) ->
+    { html, x, y } = options
+
     @$el.html(html).addClass 'visible'
+    @$el.css left: x, top: y
     return
 
   handleHideEvent: ->
