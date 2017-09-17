@@ -535,9 +535,11 @@ class Relation extends DisplayObject
     if @state('locked') is 'on'
       @transitionTo 'path', 'highlight'
       @transitionTo 'locked', 'off'
+      @transitionTo 'labels', 'off'
     else
       @transitionTo 'path', 'active'
       @transitionTo 'locked', 'on'
+      @transitionTo 'labels', 'on'
     return
 
   # Transitions
