@@ -5,6 +5,7 @@ Raphael = require 'raphael'
 DisplayObject = require 'display_objects/display_object'
 formatNumber = require 'lib/format_number'
 utils = require 'lib/utils'
+mediator = require 'mediator'
 
 # Shortcuts
 # ---------
@@ -286,6 +287,7 @@ class Relation extends DisplayObject
       @animationDeferred.resolve()
 
     @registerMouseHandlers()
+    @registerMediator()
 
     @drawn = true
     return
@@ -457,6 +459,14 @@ class Relation extends DisplayObject
     @destinationArrow.hide() if @destinationArrow
     return
 
+  # Mediator handling
+  # -----------------
+
+  registerMediator: ->
+    mediator.subscribe "relation:click", @clicked, this
+    mediator.subscribe "relation:mouseEnter", @mouseenterHandler, this
+    mediator.subscribe "relation:mouseLeave", @mouseleaveHandler, this
+
   # Mouse event handling
   # --------------------
 
@@ -466,7 +476,16 @@ class Relation extends DisplayObject
       .mouseleave(@mouseleaveHandler)
       .click(@clicked)
 
-  mouseenterHandler: =>
+  mouseenterHandler: ({from, to}) =>
+#    # check for mediated events
+#    unless from or to
+#      mediator.publish 'relation:mouseEnter', {from: @from.id, to: @to.id}
+#      return
+#
+#    # check for matching from / to
+#    return if from and from isnt @from.id
+#    return if to and to isnt @to.id
+
     # Highlight if normal
     if @state('path') is 'normal'
       @transitionTo 'path', 'highlight'
@@ -475,13 +494,20 @@ class Relation extends DisplayObject
     @transitionTo 'labels', 'on'
     return
 
-  mouseleaveHandler: (event) =>
-    relatedTarget = event.relatedTarget
-
+  mouseleaveHandler: ({relatedTarget, from, to}) =>
     # Stop if the target is the relation path
     if _.some(@displayObjects, (obj) -> relatedTarget is obj.node) or
       @labelContainer and $.contains(@labelContainer.get(0), relatedTarget)
         return
+#
+#    # check for mediated events
+#    unless from or to
+#      mediator.publish 'relation:mouseLeave', {from: @from.id, to: @to.id}
+#      return
+#
+#    # check for matching from / to
+#    return if from and from isnt @from.id
+#    return if to and to isnt @to.id
 
     pathState = @state 'path'
 
@@ -494,7 +520,17 @@ class Relation extends DisplayObject
       @transitionTo 'labels', 'off'
     return
 
-  clicked: =>
+  clicked: ({from, to}) =>
+    # check for mediated events
+    unless from or to
+      mediator.publish 'relation:click', {from: @from.id, to: @to.id}
+      return
+
+    # check for matching from / to
+    return if from and from isnt @from.id
+    return if to and to isnt @to.id
+    console.log "click", from, to
+
     # Toggle locking
     if @state('locked') is 'on'
       @transitionTo 'path', 'highlight'
@@ -854,6 +890,9 @@ class Relation extends DisplayObject
     # Remove references from elements
     @from.removeRelationOut this if @from
     @to.removeRelationIn this if @to
+
+    # Stop listening to mediator
+    mediator.unsubscribe null, null, this
 
     # Stop the animation Deferred
     @animationDeferred.reject() if @animationDeferred

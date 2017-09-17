@@ -23,8 +23,10 @@ class ContextboxView extends View
     null
 
   explainMagnet: (options) ->
-    {elementModel, x, y} = options
+    {elementModel, x, y, parent} = options
     {type, unit} = elementModel.dataType
+
+    return unless parent.has(@$el).length
 
     configuration = @model.get 'configuration'
 
@@ -77,7 +79,7 @@ class ContextboxView extends View
     { html, x, y } = options
 
     @$el.html(html).addClass 'visible'
-    @$el.css left: x, top: y
+    @$el.css marginTop: -0.75 * @$el.height()
     return
 
   handleHideEvent: ->

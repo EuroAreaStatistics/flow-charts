@@ -12,7 +12,8 @@ html, body {
   height: 100%;
 }
 
-#player-container {
+#player-container,
+#player-container2 {
   position: relative;
   margin: 10px;
   border: 1px solid #eee;
@@ -24,6 +25,8 @@ html, body {
 <body>
 
 <div id="player-container"></div>
+
+<div id="player-container2"></div>
 
 <p>
   <button id="loadNewKeyframes">Load new keyframe data</button>
@@ -94,6 +97,7 @@ html, body {
 
   var render = function () {
     player = FlowViz.renderPlayer('#player-container', presentationData);
+    FlowViz.renderPlayer('#player-container2', presentationData);
   };
 
   render();
