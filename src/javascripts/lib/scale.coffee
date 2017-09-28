@@ -90,8 +90,8 @@ MAPS =
   # -------------
 
   countryLabelSize:
-    300: 12
-    520: 14
+    300: 10
+    520: 12
     max: 15
 
   countryImageSize:
