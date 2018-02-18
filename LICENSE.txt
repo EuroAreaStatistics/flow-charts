@@ -40,3 +40,5 @@ https://www.bertelsmann-stiftung.de/
 
 The original code base has been released under an MIT license:
 https://github.com/bertelsmannstift/GED-VIZ/blob/master/LICENSE.md
+
+
