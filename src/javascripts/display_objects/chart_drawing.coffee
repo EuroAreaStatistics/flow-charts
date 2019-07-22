@@ -152,7 +152,7 @@ ChartDrawing =
     text = @paper.text(
       @paper.width / 2,
       @paper.height / 2,
-      @('chart', 'element_count_error')
+      @t('chart', 'element_count_error')
     ).attr(
       'text-anchor': 'middle'
       'font-family': 'inherit'
