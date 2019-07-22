@@ -54,6 +54,7 @@ class Indicators extends DisplayObject
   # countryLabel: Raphael.Element
   # countryLabelX: Number
   # countryLabelY: Number
+  # countryImage: Raphael.Element
   #
   # indicators: Array.<Indicator>
   #   The actual list which holds the Indicator instances
@@ -271,23 +272,6 @@ class Indicators extends DisplayObject
     x += cos(deg) * @distanceToMagnet
     y += sin(deg) * @distanceToMagnet
 
-    if @elementCount < 9
-      # Regular polygon
-
-      # Top position: Start at the topmost, draw from top to bottom
-      if @side is TOP and @visibleCount
-        y -= (@visibleCount - (if @labelBesideIndicators then 1 else 0)) * @indicatorHeight
-
-      # Left and right position: Center the label and the indicators vertically
-      # Calculate total height, then move the start point accordingly
-      if @side in [LEFT, RIGHT]
-        direction = if @side is RIGHT then -1 else 1
-        # Total height of all indicators
-        totalHeight = @visibleCount * @indicatorHeight
-        offset = totalHeight / 2
-        x += direction * offset * @tanYFactor
-        y -= offset
-
     # Save calculated properties
     @startX = x
     @startY = y
@@ -335,81 +319,79 @@ class Indicators extends DisplayObject
     {deg} = magnet
 
     x = @startX
-    y = @startY - 2
+    y = @startY
 
     isNineToAll = @elementCount >= 9
 
-    # Adjust the position
-    if isNineToAll
-      # 9+ elements
-      # -----------
+    imageSize = scale 'countryImageSize', @paper.width
 
-      # Move point away from magnet
-      distance = @distanceToMagnet # Take the same value again
-      x += cos(deg) * distance
-      y += sin(deg) * distance
-
-      # Top position: Start at the topmost, draw from top to bottom
-      if @side is TOP and @visibleCount
-        y -= (@visibleCount - (if @labelBesideIndicators then 1 else 0)) * @indicatorHeight
-
-    else
-      # 1-8 elements
-      # ------------
-
-      # Left and right position: Move x so the label is in a line with
-      # the indicator visualizations’ center point
-      if @side in [LEFT, RIGHT] and @visibleCount
-        visualizationSize = scale 'visualizationSize', @paper.width
-        x += (visualizationSize / 4) * (if @side is LEFT then -1 else 1)
-
-      # Top and bottom position: When showing the text next to indicators,
-      # add a gap between the text and the indicators
-      if @labelBesideIndicators and @visibleCount
-        x -= 20
-
-    # Finally, the label.
     labelText = @t 'entityNames', @element.id
+    # replace last &shy with hyphen and newline
+    labelText = labelText.replace(/\u00ad([^\u00ad]*)$/, '-\n$1')
+    # replace last space or newline by newline
+    labelText = labelText.replace(/[ \n]([^ \n]*)$/, '\n$1')
+
+    fontSize = scale 'countryLabelSize', @paper.width
+    lineHeight = fontSize
+    lines = (labelText.match(/\n/g)?.length ? 0) + 1
+
+    # Adjust the position
+    # Move point away from magnet
+    distance = imageSize * Math.sqrt(2) / 2
+    distance += lines * lineHeight
+    smallestSide = Math.min @paper.width, @paper.height
+    distance += scale('visualizationSize', smallestSide) / 2
+    x += cos(deg) * distance
+    y += sin(deg) * distance
+
+    labelImage = @t 'entityImages', @element.id
+
+    x -= imageSize / 2
+    y -= imageSize / 2
+
+    textX = x + imageSize/2
+    textY = y + (lines + 1)*(lineHeight/2) + imageSize
+
+    if @elementCount < 9 and @side is LEFT
+      textY += scale('visualizationSize', smallestSide)
 
     newLabel = not @countryLabel
     if newLabel
       # Create the a fresh label
-      @countryLabel = @paper.text(x, y, labelText)
+      @countryLabel = @paper.text(textX, textY, labelText)
         .attr(
           'font-family': 'inherit'
           'font-weight': 'bold'
           fill: 'rgb(45, 45, 45)'
         )
+      @countryImage = @paper.image(labelImage, x, y, imageSize, imageSize)
         .hover(
           _.bind(@transitionFirstIndicator, this, 'highlight'),
           _.bind(@transitionFirstIndicator, this, 'normal')
         )
 
     # Text alignment
-    textAnchor =
-      if @labelBesideIndicators # This implies top or bottom
-        'end'
-      else if @side in [TOP, BOTTOM]
-        'middle'
-      else if @side is LEFT
-        'end'
-      else # right
-        'start'
+    textAnchor = 'middle'
 
     # Set the font size and other properties
     # which might have changed since the creation.
-    fontSize = scale 'countryLabelSize', @paper.width
     @countryLabel.attr
       text: labelText
       'text-anchor': textAnchor
       'font-size': fontSize
       opacity: 1
+    @countryImage.attr
+      opacity: 1
 
     if newLabel
       @addChild @countryLabel
+      @addChild @countryImage
     else
       # Animate existing country label
       @countryLabel
+        .stop()
+        .animate({x: textX, y: textY}, @animationDuration, 'easeOut')
+      @countryImage
         .stop()
         .animate({x, y}, @animationDuration, 'easeOut')
 
@@ -425,6 +407,8 @@ class Indicators extends DisplayObject
     delete @countryLabel
     delete @countryLabelX
     delete @countryLabelY
+    @removeChild @countryImage
+    delete @countryImage
     return
 
   # Draw indicators (less than 9 elements)
@@ -433,27 +417,15 @@ class Indicators extends DisplayObject
   drawOneToEightIndicators: =>
     return if @visibleCount is 0
 
-    x = @startX
-    y = @startY
+    x = @countryLabelX
+    y = @countryLabelY
 
-    # Top and bottom position: When showing the indicators below the text,
-    # move x in order to center the indicators horizontally
-    if @side in [TOP, BOTTOM] and not @labelBesideIndicators
-      x += scale 'indicatorIndent', @paper.width
 
     for indicator, index in @indicators[0...@visibleCount]
 
       # Calculate the indicator’s position
-      if @side in [LEFT, RIGHT]
-        # Assure the actual vertical distance
-        direction = if @side is LEFT then -1 else 1
-        x += direction * @indicatorHeight * @tanYFactor
-        y += @indicatorHeight
-      else
-        # Top and bottom: Skip the first increment when
-        # the label is positioned next to the indicators
-        if not @labelBesideIndicators or index > 0
-          y += @indicatorHeight
+
+      imageSize = scale 'countryImageSize', @paper.width
 
       # Draw the indicator
       indicator.draw {@paper, @$container, @side}
@@ -461,11 +433,15 @@ class Indicators extends DisplayObject
       # Position the indicator’s element
       indicatorEl = indicator.el
       smallestSide = Math.min @paper.width, @paper.height
-      eventualY = y - scale('visualizationSize', smallestSide) / 2
+      eventualY = y
+
       if @side is LEFT
+        eventualY += imageSize
         eventualX = @paper.width - x
-        indicatorEl.css right: eventualX, top: eventualY
+        indicatorEl.css right: eventualX - scale('visualizationSize', smallestSide) / 2, top: eventualY
       else
+        eventualY -= scale('visualizationSize', smallestSide) / 2
+        x += imageSize
         eventualX = x
         indicatorEl.css left: eventualX, top: eventualY
 
@@ -584,7 +560,7 @@ class Indicators extends DisplayObject
       x = @paper.width - x
       indicatorEl.css right: x, top: y
     else
-      indicatorEl.css left: x, top: y
+      indicatorEl.css left: x, top: y+35
 
     return
 

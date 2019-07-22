@@ -92,15 +92,20 @@ MAPS =
   countryLabelSize:
     300: 12
     520: 14
-    max: 17
+    max: 15
+
+  countryImageSize:
+    300: 30
+    520: 30
+    max: 50
 
   # Indicators
   # ----------
 
   indicatorDistance:
-    300: 10
-    520: 15
-    max: 20
+    300: 20
+    520: 25
+    max: 30
 
   indicatorHeight:
     300: 12
