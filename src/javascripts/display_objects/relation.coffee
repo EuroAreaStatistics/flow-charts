@@ -135,6 +135,8 @@ class Relation extends DisplayObject
     toMagnet = @to.magnet
 
     {value, positionIn, positionOut} = this
+    return if isNaN positionIn
+    return if isNaN positionOut
 
     fromSumOut = @from.model.sumOut
     toSumIn = @to.model.sumIn
@@ -408,6 +410,7 @@ class Relation extends DisplayObject
   getSourceArrowPath: (source, offset, degrees) ->
     fromSumOut = @from.model.sumOut
     {value, positionOut} = this
+    return '' if isNaN positionOut
 
     a =
       x: @relationStartPointX(source, fromSumOut, value, positionOut, offset)
@@ -430,6 +433,7 @@ class Relation extends DisplayObject
   getDestinationArrowPath: (destination, offset, degrees) ->
     toSumIn = @to.model.sumIn
     {value, positionIn} = this
+    return '' if isNaN positionIn
 
     a =
       x: @relationStartPointX(destination, toSumIn, value, positionIn, offset)
