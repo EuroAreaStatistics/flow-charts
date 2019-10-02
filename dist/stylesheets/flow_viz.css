@@ -609,8 +609,9 @@
 .flow-viz-player .contextbox {
   display: none;
   position: absolute;
-  top: 5px;
-  right: 5px;
+  top: 50%;
+  left: 50%;
+  margin-left: -110px;
   border-radius: 4px;
   padding: 0 10px;
   width: 200px;
@@ -618,6 +619,7 @@
   font-size: 12px;
   line-height: 1.2;
   color: #505050;
+  z-index: 10;
 }
 
 .flow-viz-player .contextbox.visible {
