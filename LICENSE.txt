@@ -1,5 +1,5 @@
-
-Copyright 2017 Organisation for Economic Co-operation and Development
+The Software is built upon and together with the OECD. See also OECD Disclaimer.
+The ECB/OECD does not take responsibility for any replication of the content of the Software, or any other form of redistribution.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
